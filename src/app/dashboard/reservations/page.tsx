@@ -65,7 +65,7 @@ function ReservationDetailsModal({ open, onClose, reservation }: { open: boolean
             <p className="text-white/60 text-sm mb-2">Reservation Summary</p>
             <div className="flex justify-between items-center mb-2">
               <span>Total Price:</span>
-              <span className="text-2xl font-bold text-green-400">${reservation.price.toFixed(2)}</span>
+              <span className="text-2xl font-bold text-green-400">${reservation.price}</span>
             </div>
             <p className="text-white/70 text-sm">Date: {new Date(reservation.createdAt).toLocaleString()}</p>
             {reservation.note && (
@@ -86,7 +86,7 @@ function ReservationDetailsModal({ open, onClose, reservation }: { open: boolean
                       <p className="font-medium text-white">{service.name}</p>
                       <p className="text-sm text-white/60">{service.description}</p>
                     </div>
-                    <p className="text-green-400 font-semibold">${service.price.toFixed(2)}</p>
+                    <p className="text-green-400 font-semibold">${service.price}</p>
                   </div>
                 ))}
               </div>
@@ -403,7 +403,7 @@ export default function ReservationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-200 text-sm font-medium">Total Revenue</p>
-                <p className="text-3xl font-bold text-white">${totalRevenue.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-white">${totalRevenue}</p>
               </div>
               <div className="text-3xl">💰</div>
             </div>
@@ -513,7 +513,7 @@ export default function ReservationsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-white/90">
-                      <span className="text-green-400 font-bold text-lg">${r.price.toFixed(2)}</span>
+                      <span className="text-green-400 font-bold text-lg">${r.price}</span>
                     </td>
                     <td className="px-6 py-4 text-white/90">
                       <div className="flex items-center gap-2">

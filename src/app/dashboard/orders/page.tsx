@@ -103,7 +103,7 @@ function OrderDetailsModal({ open, onClose, order }: { open: boolean, onClose: (
             <p className="text-white/60 text-sm mb-2">Order Summary</p>
             <div className="flex justify-between items-center mb-2">
               <span>Total Price:</span>
-              <span className="text-2xl font-bold text-green-400">${order.totalPrice.toFixed(2)}</span>
+              <span className="text-2xl font-bold text-green-400">${order.totalPrice}</span>
             </div>
             <p className="text-white/70 text-sm">Date: {new Date(order.createdAt).toLocaleString()}</p>
           </div>
@@ -117,7 +117,7 @@ function OrderDetailsModal({ open, onClose, order }: { open: boolean, onClose: (
                     <p className="font-medium">{item.product.name}</p>
                     <p className="text-sm text-white/60">Qty: {item.quantity}</p>
                   </div>
-                  <p className="text-green-400 font-semibold">${item.priceAtOrderTime.toFixed(2)}</p>
+                  <p className="text-green-400 font-semibold">${item.priceAtOrderTime}</p>
                 </div>
               ))}
             </div>
@@ -463,7 +463,7 @@ export default function OrdersPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-200 text-sm font-medium">Total Revenue</p>
-                <p className="text-3xl font-bold text-white">${totalRevenue.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-white">${totalRevenue}</p>
               </div>
               <div className="text-3xl">💰</div>
             </div>
@@ -568,7 +568,7 @@ export default function OrdersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-white/90">
-                      <span className="text-green-400 font-bold text-lg">${order.totalPrice.toFixed(2)}</span>
+                      <span className="text-green-400 font-bold text-lg">${order.totalPrice}</span>
                     </td>
                     <td className="px-6 py-4 text-white/90">
                       {new Date(order.createdAt).toLocaleDateString()}
