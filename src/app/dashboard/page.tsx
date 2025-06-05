@@ -288,10 +288,10 @@ export default function DashboardHome() {
             //   hoverGradient: "from-green-600 to-emerald-600"
             // },
             { 
-              href: "/dashboard/profile", 
-              label: "Profile", 
-              icon: "👤",
-              description: "Update your profile information",
+              href: "/dashboard/categories", 
+              label: "Categories", 
+              icon: "🏷️",
+              description: "Manage product categories",
               gradient: "from-sky-500 via-blue-600 to-indigo-600",
               hoverGradient: "from-sky-600 via-blue-700 to-indigo-700"
             },

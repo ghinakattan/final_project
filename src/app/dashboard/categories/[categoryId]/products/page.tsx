@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import { useParams } from 'next/navigation';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Category {
   id: number;
@@ -238,11 +239,20 @@ const ProductsByCategoryPage: React.FC = () => {
 
   // Filter products to only those with the current categoryId
   const filteredProducts = products.filter(
-    (product) => product.category && String(product.category.id) === String(categoryId)
+    (product) => (product.category ? String(product.category.id) === String(categoryId) : true)
   );
 
   if (loading) {
-    return <div>Loading products...</div>;
+    // return <div>Loading products...</div>;
+    return (
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 items-center justify-center p-4">
+        <LoadingSpinner
+          size="lg"
+          className="mb-8"
+         
+        />
+      </div>
+    );
   }
 
   if (error) {
@@ -326,6 +336,11 @@ const ProductsByCategoryPage: React.FC = () => {
                  <option value="2" className="bg-slate-800 text-white">Electric</option>
                  <option value="3" className="bg-slate-800 text-white">Hybrid</option>
                </select>
+               {newCarType === '' && (
+                 <p className="text-blue-300 text-sm mt-1 italic bg-blue-900/20 p-2 rounded-lg border border-blue-400/30">
+                   💡 This product can be compatible with all 3 car types (Gasoline, Electric, Hybrid)
+                 </p>
+               )}
             </div>
             <button
               type="submit"
@@ -338,6 +353,9 @@ const ProductsByCategoryPage: React.FC = () => {
 
         {loading && <div className="text-white/70 text-center">Loading products...</div>}
         {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
+        
+        {/* Debug Info */}
+       
         {/* Add delete success/error messages if needed */}
         {/* {deleteError && <div className="text-red-500">{deleteError}</div>} */}
         {/* {deleteSuccess && <div className="text-green-500">{deleteSuccess}</div>} */}
@@ -346,7 +364,9 @@ const ProductsByCategoryPage: React.FC = () => {
           <div className="text-white/60 text-center text-lg">No products found for this category.</div>
         ) : (
                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product, index) => (
+            {filteredProducts.map((product, index) => {
+              console.log('Product:', product.name, 'carType:', product.carType, 'category:', product.category);
+              return (
                              <motion.div
                  key={product.id}
                  className="relative bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 group"
@@ -402,19 +422,28 @@ const ProductsByCategoryPage: React.FC = () => {
                                        <div className="space-y-2">
                       <p className="text-gray-700 dark:text-gray-300 mt-2">Price: ${product.price}</p>
                       
-                      {product.category && (
+                      {product.category ? (
                         <p className="text-gray-600 dark:text-gray-400 text-sm">Category: {product.category.name}</p>
+                      ) : (
+                        <p className="text-yellow-300 text-sm font-bold bg-yellow-900/40 p-3 rounded-lg border-2 border-yellow-400/50 shadow-lg">
+                          🚗 This product is suitable for all 3 car types (Gasoline, Electric, Hybrid)
+                        </p>
                       )}
                       
-                      {product.carType && (
+                      {product.carType && product.carType !== null && product.carType !== undefined ? (
                         <p className="text-gray-600 dark:text-gray-400 text-sm">
                           Car Type: {product.carType === 1 ? 'Gasoline' : product.carType === 2 ? 'Electric' : 'Hybrid'}
+                        </p>
+                      ) : (
+                        <p className="text-green-300 text-sm font-bold bg-green-900/40 p-3 rounded-lg border-2 border-green-400/50 shadow-lg">
+                          ⚡ Compatible with all car types (Gasoline, Electric, Hybrid)
                         </p>
                       )}
                     </div>
                  </div>
               </motion.div>
-            ))}
+            );
+            })}
           </div>
         )}
 

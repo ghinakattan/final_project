@@ -15,6 +15,7 @@ interface Service {
   price: number;
   description: string;
   createdAt: string;
+  carType?: number;
 }
 
 export default function ServicesPage() {
@@ -27,6 +28,7 @@ export default function ServicesPage() {
   const [addImageFile, setAddImageFile] = useState<File | null>(null);
   const [addPrice, setAddPrice] = useState("");
   const [addDescription, setAddDescription] = useState("");
+  const [addCarType, setAddCarType] = useState<number | ''>('');
   const [addError, setAddError] = useState("");
   const [addSuccess, setAddSuccess] = useState("");
   const [showEditForm, setShowEditForm] = useState(false);
@@ -35,11 +37,16 @@ export default function ServicesPage() {
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
   const [editPrice, setEditPrice] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [editCarType, setEditCarType] = useState<number | ''>('');
   const [editError, setEditError] = useState("");
   const [editSuccess, setEditSuccess] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
 
+  const sanitizeDescription = (text: string) => {
+    if (!text) return text;
+    return text.replace(/Car\s*Type:[^\n]*/gi, '').trim();
+  };
   const fetchServices = async () => {
     const token = getToken();
     if (!token) {
@@ -107,6 +114,9 @@ export default function ServicesPage() {
     formData.append("image", addImageFile);
     formData.append("price", addPrice);
     formData.append("description", addDescription);
+    if(addCarType !== '') {
+      formData.append("carType", addCarType.toString());
+    }
     try {
       const res = await fetch("https://file-managment-javz.onrender.com/api/services", {
         method: "POST",
@@ -125,6 +135,7 @@ export default function ServicesPage() {
       setAddImageFile(null);
       setAddPrice("");
       setAddDescription("");
+      setAddCarType('');
       setShowAddForm(false);
       fetchServices();
     } catch (err) {
@@ -138,6 +149,7 @@ export default function ServicesPage() {
     setEditImageFile(null);
     setEditPrice(service.price.toString());
     setEditDescription(service.description);
+    setEditCarType(service.carType || '');
     setEditError("");
     setEditSuccess("");
     setShowEditForm(true);
@@ -170,6 +182,9 @@ export default function ServicesPage() {
     if (editImageFile) formData.append("image", editImageFile);
     formData.append("price", String(Number(editPrice)));
     formData.append("description", editDescription);
+    if(editCarType !== '') {
+      formData.append("carType", editCarType.toString());
+    }
     try {
       const res = await fetch(`https://file-managment-javz.onrender.com/api/services/${editService.id}`, {
         method: "PATCH",
@@ -228,11 +243,7 @@ export default function ServicesPage() {
   };
 
   const formatPrice = (price: number) => {
-    const num = new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-    return `$${num}`;
+    return `$${price}`;
   };
 
   if (loading) {
@@ -447,10 +458,24 @@ export default function ServicesPage() {
                 <input
                   type="file"
                   onChange={e => setAddImageFile(e.target.files ? e.target.files[0] : null)}
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 file:mr-4 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
                   required
                   accept="image/*"
                 />
+              </div>
+              
+              <div>
+                <label className="block text-white/90 text-sm font-medium mb-2">Car Type</label>
+                <select
+                  value={addCarType}
+                  onChange={(e) => setAddCarType(e.target.value ? parseInt(e.target.value) : '')}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300"
+                >
+                  <option value="" className="bg-slate-800 text-white">Select Car Type</option>
+                  <option value="1" className="bg-slate-800 text-white">Gasoline</option>
+                  <option value="2" className="bg-slate-800 text-white">Electric</option>
+                  <option value="3" className="bg-slate-800 text-white">Hybrid</option>
+                </select>
               </div>
               
               <div className="text-center">
@@ -526,10 +551,24 @@ export default function ServicesPage() {
                 <input
                   type="file"
                   onChange={e => setEditImageFile(e.target.files ? e.target.files[0] : null)}
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 file:mr-4 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
                   accept="image/*"
                 />
                 <p className="text-white/60 text-sm mt-1">Leave blank to keep the current image</p>
+              </div>
+              
+              <div>
+                <label className="block text-white/90 text-sm font-medium mb-2">Car Type</label>
+                <select
+                  value={editCarType}
+                  onChange={(e) => setEditCarType(e.target.value ? parseInt(e.target.value) : '')}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300"
+                >
+                  <option value="" className="bg-slate-800 text-white">Select Car Type</option>
+                  <option value="1" className="bg-slate-800 text-white">Gasoline</option>
+                  <option value="2" className="bg-slate-800 text-white">Electric</option>
+                  <option value="3" className="bg-slate-800 text-white">Hybrid</option>
+                </select>
               </div>
               
               <div className="flex justify-center gap-4">
@@ -607,16 +646,36 @@ export default function ServicesPage() {
                   </h3>
                   
                   <p className="text-white/70 text-sm mb-4 line-clamp-2">
-                    {service.description}
+
+                    {/* {service.description} */}
+                    {sanitizeDescription(service.description)}
                   </p>
                   
                   <div className="space-y-2 mb-4">
                     <p className="text-blue-300 font-bold text-lg">
                       {formatPrice(service.price)}
                     </p>
+                    
+                    {/* {service.carType && (
+                      <p className="text-white/60 text-sm">
+                        Car Type: <span className="text-green-300">
+                          {service.carType === 1 ? 'Gasoline' : service.carType === 2 ? 'Electric' : 'Hybrid'}
+                        </span>
+                      </p>
+                    )} */}
+                    
                     <p className="text-white/50 text-xs">
                       Added {new Date(service.createdAt).toLocaleDateString()}
                     </p>
+                    {service.carType ? (
+                      <p className="text-white/60 text-sm">
+                        Car Type: <span className="text-green-300">{service.carType === 1 ? 'Gasoline' : service.carType === 2 ? 'Electric' : 'Hybrid'}</span>
+                      </p>
+                    ) : (
+                      <div className="bg-green-500/20 border border-green-500/30 text-green-300 px-3 py-2 rounded-lg text-sm">
+                        ⚡ Compatible with all car types (Gasoline, Electric, Hybrid)
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -647,5 +706,4 @@ export default function ServicesPage() {
         />
       </motion.div>
     </div>
-  );
-} 
+  );}

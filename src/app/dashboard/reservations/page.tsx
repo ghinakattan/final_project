@@ -51,7 +51,7 @@ function ReservationDetailsModal({ open, onClose, reservation }: { open: boolean
             <div className="bg-white/5 rounded-xl p-4">
               <p className="text-white/60 text-sm">Status</p>
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                reservation.status === 'COMPLETED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                reservation.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
                 reservation.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
                 reservation.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
@@ -128,17 +128,21 @@ function Toast({ message, type, onClose }: { message: string, type: 'success' | 
   );
 }
 
-function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }: { open: boolean, onClose: () => void, onSubmit: (status: string, note: string) => void, reservationId: number, changing: boolean }) {
+function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }: { open: boolean, onClose: () => void, onSubmit: (status: string, note: string, date: string, time: string) => void, reservationId: number, changing: boolean }) {
   const [status, setStatus] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
-  const statuses = ['PENDING', 'COMPLETED', 'CANCELLED'];
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const statuses = ['PENDING', 'ACCEPTED', 'CANCELLED'];
 
   useEffect(() => {
     if (open) {
       setStatus('');
       setNote('');
       setError('');
+      setDate('');
+      setTime('');
     }
   }, [open]);
 
@@ -184,6 +188,27 @@ function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }:
             />
             {error && <div className="text-red-400 text-sm mt-1">{error}</div>}
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2 text-white/80 text-sm font-medium">Date</label>
+              <input
+                type="date"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-white/50 transition-all duration-300"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-white/80 text-sm font-medium">Time</label>
+              <input
+                type="time"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-white/50 transition-all duration-300"
+                value={time}
+                onChange={e => setTime(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
         
         <div className="flex justify-end gap-3 mt-6">
@@ -195,13 +220,17 @@ function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }:
           </button>
           <button
             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition-all duration-300 hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
-            disabled={!status || !note || changing}
+            disabled={!status || !note || !date || !time || changing}
             onClick={() => {
               if (!note) {
                 setError('Note is required.');
                 return;
               }
-              onSubmit(status, note);
+              if (!date || !time) {
+                setError('Date and time are required.');
+                return;
+              }
+              onSubmit(status, note, date, time);
             }}
           >
             {changing && <LoadingSpinner size="sm" />}
@@ -278,7 +307,7 @@ export default function ReservationsPage() {
     setSelectedReservationId(null);
   };
 
-  const handleChangeStatus = async (status: string, note: string) => {
+  const handleChangeStatus = async (status: string, note: string, date: string, time: string) => {
     if (!selectedReservationId) return;
     setChanging(true);
     const token = getToken();
@@ -293,6 +322,8 @@ export default function ReservationsPage() {
           status,
           id: selectedReservationId,
           note,
+          date,
+          time,
         }),
       });
       if (!res.ok) throw new Error('Failed to change status');
@@ -335,7 +366,7 @@ export default function ReservationsPage() {
 
   const totalRevenue = reservations.reduce((sum, r) => sum + r.price, 0);
   const pendingReservations = reservations.filter(r => r.status === 'PENDING').length;
-  const completedReservations = reservations.filter(r => r.status === 'COMPLETED').length;
+  const acceptedReservations = reservations.filter(r => r.status === 'ACCEPTED').length;
 
   return (
     <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 p-6">
@@ -458,7 +489,7 @@ export default function ReservationsPage() {
               >
                 <option value="" className="bg-white text-black">All Statuses</option>
                 <option value="PENDING" className="bg-white text-black">Pending</option>
-                <option value="COMPLETED" className="bg-white text-black">Completed</option>
+                <option value="ACCEPTED" className="bg-white text-black">ACCEPTED</option>
                 <option value="CANCELLED" className="bg-white text-black">Cancelled</option>
               </select>
             </div>
@@ -504,7 +535,7 @@ export default function ReservationsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        r.status === 'COMPLETED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                        r.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
                         r.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
                         r.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                         'bg-blue-500/20 text-blue-300 border border-blue-500/30'
@@ -568,4 +599,4 @@ export default function ReservationsPage() {
       </motion.div>
     </div>
   );
-} 
+}
