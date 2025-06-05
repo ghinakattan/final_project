@@ -109,7 +109,7 @@ export default function LoginPage() {
             {/* Back to home */}
             <div className="mt-8 text-center">
               <Link href="/signup" className="text-sm text-white/60 hover:text-white transition-colors block mb-2">
-                Don&apos;t have an account? Sign up
+                {/* Don&apos;t have an account? Sign up */}
               </Link>
               <Link href="/" className="text-sm text-white/60 hover:text-white transition-colors">
                 ← Back to home
