@@ -70,19 +70,20 @@ export default function EnterPage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Link 
-                  href="/signup" 
-                  className="px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-300 text-center block"
-                >
-                  {/* Schedule Service */}
-                  Sign up
-                </Link>
-              </motion.div>
-              <motion.div
+            <motion.div
+  whileHover={{ scale: 1.02 }}
+  whileTap={{ scale: 0.98 }}
+>
+  <Link 
+    href="/login" 
+    className="min-w-[200px] px-20 py-6 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-300 text-center text-lg"
+  >
+    Sign in
+  </Link>
+</motion.div>
+
+
+              {/* <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -92,7 +93,7 @@ export default function EnterPage() {
                 >
                   Sign In
                 </Link>
-              </motion.div> 
+              </motion.div>  */}
             </div>
 
             {/* Services Grid */}

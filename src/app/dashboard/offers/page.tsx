@@ -234,7 +234,7 @@ export default function OffersPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-white/10 text-white text-sm px-3 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+              className="bg-black/10 text-white text-sm px-3 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
             >
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
@@ -335,7 +335,7 @@ export default function OffersPage() {
                     >
                       Delete
                     </button>
-                    <span className="text-white/60 text-xs">Tap card for details</span>
+                    {/* <span className="text-white/60 text-xs">Tap card for details</span> */}
                   </div>
                 </div>
               </motion.div>

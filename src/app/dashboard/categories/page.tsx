@@ -254,7 +254,7 @@ export default function CategoriesPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -285,7 +285,7 @@ export default function CategoriesPage() {
             </div>
           </motion.div>
 
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -300,7 +300,7 @@ export default function CategoriesPage() {
               </div>
               <div className="text-3xl">📊</div>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
 
         {/* Add Category Section */}

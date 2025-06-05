@@ -469,7 +469,7 @@ export default function ReservationsPage() {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search by ID, status, or service name..."
+                  placeholder="Search by status, or service name..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 placeholder-white/50 transition-all duration-300"

@@ -15,7 +15,7 @@ export default function DashboardHome() {
   const [upcomingServicesCount, setUpcomingServicesCount] = useState<number>(0);
   const [totalBookingsCount, setTotalBookingsCount] = useState<number>(0);
   const [lastServiceDate, setLastServiceDate] = useState<string>("-");
-  const [pipelineCounts, setPipelineCounts] = useState<{ pending: number; inProgress: number; completed: number; cancelled: number}>({ pending: 0, inProgress: 0, completed: 0, cancelled: 0 });
+  const [pipelineCounts, setPipelineCounts] = useState<{ pending: number; inProgress: number; accepted: number; cancelled: number}>({ pending: 0, inProgress: 0, accepted: 0, cancelled: 0 });
   const [newUsersThisWeek, setNewUsersThisWeek] = useState<number>(0);
   const [returningUsers, setReturningUsers] = useState<number>(0);
   const router = useRouter();
@@ -89,7 +89,7 @@ export default function DashboardHome() {
           setTotalBookingsCount(reservations.length);
           const upcoming = reservations.filter((r: any) => {
             const status = (r?.status || '').toString().toUpperCase();
-            return status !== 'COMPLETED' && status !== 'CANCELLED';
+            return status !== 'ACCEPTED' && status !== 'CANCELLED';
           });
           setUpcomingServicesCount(upcoming.length);
         }
@@ -97,8 +97,8 @@ export default function DashboardHome() {
         if (ordersRes.ok) {
           const ordersJson = await ordersRes.json();
           const orders = Array.isArray(ordersJson?.data) ? ordersJson.data : (Array.isArray(ordersJson) ? ordersJson : []);
-          const completed = orders.filter((o: any) => (o?.status || '').toString().toUpperCase() === 'COMPLETED');
-          const latest = completed
+          const accepted = orders.filter((o: any) => (o?.status || '').toString().toUpperCase() === 'ACCEPTED');
+          const latest = accepted
             .map((o: any) => new Date(o?.createdAt || o?.updatedAt || 0).getTime())
             .filter((t: number) => !isNaN(t))
             .sort((a: number, b: number) => b - a)[0];
@@ -108,12 +108,12 @@ export default function DashboardHome() {
           }
 
           const toKey = (s: string) => s.toUpperCase();
-          const counts = { pending: 0, inProgress: 0, completed: 0, cancelled: 0 };
+          const counts = { pending: 0, inProgress: 0, accepted: 0, cancelled: 0 };
           for (const o of orders) {
             const status = toKey((o?.status || '') as string);
             if (status === 'PENDING') counts.pending += 1;
             else if (status === 'IN_PROGRESS' || status === 'INPROGRESS') counts.inProgress += 1;
-            else if (status === 'COMPLETED') counts.completed += 1;
+            else if (status === 'ACCEPTED') counts.accepted += 1;
             else if (status === 'CANCELLED' || status === 'CANCELED') counts.cancelled += 1;
           }
           setPipelineCounts(counts);
@@ -233,11 +233,11 @@ export default function DashboardHome() {
           className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 mb-12"
         >
           <h3 className="text-xl font-bold text-white mb-4">Service Pipeline</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {[
               { label: 'Pending', value: pipelineCounts.pending, href: '/dashboard/orders?status=PENDING', color: 'from-yellow-500/20 to-amber-500/20 text-yellow-300 border-yellow-500/30' },
-              { label: 'In-Progress', value: pipelineCounts.inProgress, href: '/dashboard/orders?status=IN_PROGRESS', color: 'from-blue-500/20 to-cyan-500/20 text-cyan-300 border-cyan-500/30' },
-              { label: 'Completed', value: pipelineCounts.completed, href: '/dashboard/orders?status=COMPLETED', color: 'from-emerald-500/20 to-green-500/20 text-emerald-300 border-emerald-500/30' },
+              // { label: 'In-Progress', value: pipelineCounts.inProgress, href: '/dashboard/orders?status=IN_PROGRESS', color: 'from-blue-500/20 to-cyan-500/20 text-cyan-300 border-cyan-500/30' },
+              { label: 'accepted', value: pipelineCounts.accepted, href: '/dashboard/orders?status=ACCEPTED', color: 'from-emerald-500/20 to-green-500/20 text-emerald-300 border-emerald-500/30' },
               { label: 'Cancelled', value: pipelineCounts.cancelled, href: '/dashboard/orders?status=CANCELLED', color: 'from-rose-500/20 to-red-500/20 text-rose-300 border-rose-500/30' },
             ].map((s) => (
               <Link key={s.label} href={s.href} className={`block rounded-xl p-4 border bg-gradient-to-br ${s.color} hover:opacity-90 transition`}>

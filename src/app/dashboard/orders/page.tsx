@@ -83,7 +83,7 @@ function OrderDetailsModal({ open, onClose, order }: { open: boolean, onClose: (
             <div className="bg-white/5 rounded-xl p-4">
               <p className="text-white/60 text-sm">Status</p>
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                order.status === 'COMPLETED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                order.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
                 order.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
                 order.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
@@ -142,7 +142,7 @@ function ChangeStatusModal({ open, onClose, onSubmit, orderId, changing }: { ope
   const [status, setStatus] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
-  const statuses = ["PENDING", "ACCEPTED", "REJECTED", "CANCELED", "COMPLETED"];
+  const statuses = ["PENDING", "ACCEPTED", "REJECTED", "CANCELED"];
 
   useEffect(() => {
     if (open) {
@@ -391,7 +391,7 @@ export default function OrdersPage() {
 
   const totalRevenue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
   const pendingOrders = orders.filter(order => order.status === 'PENDING').length;
-  const completedOrders = orders.filter(order => order.status === 'COMPLETED').length;
+  const acceptedOrders = orders.filter(order => order.status === 'ACCEPTED').length;
 
   return (
     <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 p-6">
@@ -518,10 +518,10 @@ export default function OrdersPage() {
               >
                 <option value="" className="bg-white text-black">All Statuses</option>
                 <option value="PENDING" className="bg-white text-black">Pending</option>
-                <option value="COMPLETED" className="bg-white text-black">Completed</option>
+                {/* <option value="COMPLETED" className="bg-white text-black">Completed</option> */}
                 <option value="CANCELLED" className="bg-white text-black">Cancelled</option>
                 <option value="ACCEPTED" className="bg-white text-black">Accepted</option>
-                <option value="REJECTED" className="bg-white text-black">Rejected</option>
+                {/* <option value="REJECTED" className="bg-white text-black">Rejected</option> */}
               </select>
             </div>
           </div>
@@ -575,7 +575,7 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        order.status === 'COMPLETED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                        order.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
                         order.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
                         order.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                         'bg-blue-500/20 text-blue-300 border border-blue-500/30'
