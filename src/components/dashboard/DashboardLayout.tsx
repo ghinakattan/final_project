@@ -9,9 +9,9 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 overflow-y-auto">
         {children}
       </main>
     </div>

@@ -22,6 +22,7 @@ interface Product {
   image?: string;
   price: number;
   category?: Category;
+  carType?: number;
 }
 
 const ProductsByCategoryPage: React.FC = () => {
@@ -35,6 +36,7 @@ const ProductsByCategoryPage: React.FC = () => {
   const [newName, setNewName] = useState('');
   const [newImage, setNewImage] = useState<File | null>(null);
   const [newPrice, setNewPrice] = useState<number | ''>('');
+  const [newCarType, setNewCarType] = useState<number | ''>('');
   const [addError, setAddError] = useState<string | null>(null);
   const [addSuccess, setAddSuccess] = useState<string | null>(null);
 
@@ -129,13 +131,16 @@ const ProductsByCategoryPage: React.FC = () => {
     }
 
     try {
-      const formData = new FormData();
-      formData.append('name', newName);
-      if(newImage) {
-        formData.append('image', newImage);
-      }
-      formData.append('price', newPrice.toString());
-      formData.append('categoryId', categoryId); // Link product to current category
+             const formData = new FormData();
+       formData.append('name', newName);
+       if(newImage) {
+         formData.append('image', newImage);
+       }
+       formData.append('price', newPrice.toString());
+       formData.append('categoryId', categoryId); // Link product to current category
+       if(newCarType !== '') {
+         formData.append('carType', newCarType.toString());
+       }
 
       const response = await fetch('https://file-managment-javz.onrender.com/api/products', {
         method: 'POST',
@@ -151,11 +156,12 @@ const ProductsByCategoryPage: React.FC = () => {
       }
 
       const newProduct = await response.json();
-      setAddSuccess('Product added successfully!');
-      setNewName('');
-      setNewImage(null);
-      setNewPrice('');
-      setShowAddForm(false);
+             setAddSuccess('Product added successfully!');
+       setNewName('');
+       setNewImage(null);
+       setNewPrice('');
+       setNewCarType('');
+       setShowAddForm(false);
 
       // Assuming the API returns the new product data directly or within 'data'
       if (newProduct && newProduct.data) {
@@ -245,17 +251,19 @@ const ProductsByCategoryPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="w-full max-w-4xl bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/10"
-      >
-        <h1 className="text-3xl font-bold text-white mb-8 text-center">{categoryName ? `${categoryName} Products` : 'Products'}</h1>
+             <motion.div
+         initial={{ opacity: 0, y: 20 }}
+         animate={{ opacity: 1, y: 0 }}
+         transition={{ duration: 0.8 }}
+         className="w-full max-w-6xl bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/10"
+       >
+                                   <h1 className="text-4xl font-bold text-white mb-8 text-center">
+            {categoryName ? categoryName : 'Products'}
+          </h1>
 
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="mb-4 bg-green-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-green-600 transition-colors duration-300"
+          className="mb-8 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
         >
           {showAddForm ? 'Cancel Add Product' : 'Add New Product'}
         </button>
@@ -305,6 +313,20 @@ const ProductsByCategoryPage: React.FC = () => {
                 step="0.01"
               />
             </div>
+            <div>
+              <label htmlFor="carType" className="block text-white mb-1">Car Type</label>
+                             <select
+                 id="carType"
+                 value={newCarType}
+                 onChange={(e) => setNewCarType(e.target.value ? parseInt(e.target.value) : '')}
+                 className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+               >
+                 <option value="" className="bg-slate-800 text-white">Select Car Type</option>
+                 <option value="1" className="bg-slate-800 text-white">Gasoline</option>
+                 <option value="2" className="bg-slate-800 text-white">Electric</option>
+                 <option value="3" className="bg-slate-800 text-white">Hybrid</option>
+               </select>
+            </div>
             <button
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-blue-600 transition-colors duration-300"
@@ -321,54 +343,76 @@ const ProductsByCategoryPage: React.FC = () => {
         {/* {deleteSuccess && <div className="text-green-500">{deleteSuccess}</div>} */}
 
         {filteredProducts.length === 0 ? (
-          <div className="text-white/60 text-center">No products found for this category.</div>
+          <div className="text-white/60 text-center text-lg">No products found for this category.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map(product => (
-              <motion.div
-                key={product.id}
-                className="relative bg-white/10 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-white/10 dark:border-gray-700 cursor-pointer hover:scale-105 hover:shadow-2xl transition-all duration-300 ease-in-out"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                {/* Optional: Link to a product detail page */}
-                {/* <Link href={`/dashboard/products/${product.id}`}> */}
-                  <div className="relative w-full h-48 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-                     {product.image ? (
-                      <Image
-                         src={product.image}
-                         alt={product.name}
-                         layout="fill"
-                         objectFit="cover"
-                         className="transition-opacity duration-500"
-                      />
-                     ) : (
-                      <div className="text-gray-500 dark:text-gray-400">No Image</div>
-                     )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{product.name}</h3>
-                    {/* Display price */}
-                    <p className="text-gray-700 dark:text-gray-300 mt-2">Price: ${product.price.toFixed(2)}</p>
-                    {/* Display category name if available */}
-                    {product.category && (
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">Category: {product.category.name}</p>
-                    )}
-                  </div>
-                {/* </Link> */}
+                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product, index) => (
+                             <motion.div
+                 key={product.id}
+                 className="relative bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 group"
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ duration: 0.5, delay: index * 0.1 }}
+                 whileHover={{ y: -5, scale: 1.05 }}
+               >
+                 <div className="relative w-full aspect-[4/3] overflow-hidden">
+                  {product.image ? (
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      layout="fill"
+                      objectFit="cover"
+                      className="transition-transform duration-500 group-hover:scale-110"
+                    />
+                                     ) : (
+                     <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                       <span className="text-4xl text-blue-300">📦</span>
+                     </div>
+                   )}
+                  
+                                     {/* Price Badge */}
+                   <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-full font-semibold">
+                     ${product.price}
+                   </div>
 
-                {/* Delete Button */}
-                <button
-                  onClick={() => handleDeleteClick(product.id)}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors duration-200 focus:outline-none"
-                  aria-label="Delete product"
-                >
-                  {/* Simple X icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                                     {/* Category Badge */}
+                   {product.category && (
+                     <div className="absolute top-3 left-3 bg-blue-500/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
+                       {product.category.name}
+                     </div>
+                   )}
+
+                                     {/* Delete Button Overlay */}
+                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                     <button
+                       onClick={() => handleDeleteClick(product.id)}
+                       className="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl font-medium transition-all duration-300 transform translate-y-4 group-hover:translate-y-0"
+                       aria-label="Delete product"
+                     >
+                       🗑️ Delete
+                     </button>
+                   </div>
+                </div>
+
+                                 <div className="p-4">
+                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 truncate">
+                     {product.name}
+                   </h3>
+                   
+                                       <div className="space-y-2">
+                      <p className="text-gray-700 dark:text-gray-300 mt-2">Price: ${product.price}</p>
+                      
+                      {product.category && (
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">Category: {product.category.name}</p>
+                      )}
+                      
+                      {product.carType && (
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                          Car Type: {product.carType === 1 ? 'Gasoline' : product.carType === 2 ? 'Electric' : 'Hybrid'}
+                        </p>
+                      )}
+                    </div>
+                 </div>
               </motion.div>
             ))}
           </div>

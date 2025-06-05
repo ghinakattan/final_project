@@ -29,6 +29,7 @@ export default function OffersPage() {
   const [deleteSuccess, setDeleteSuccess] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [offerToDeleteId, setOfferToDeleteId] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest'>("newest");
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -207,21 +208,39 @@ export default function OffersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col items-center justify-center p-4">
+    <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full max-w-4xl bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/10"
+        className="w-full max-w-6xl bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/10"
       >
-        <h1 className="text-3xl font-bold text-white mb-8 text-center">Offers</h1>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-3">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-indigo-300">Hot Offers</span>
+          </h1>
+          <p className="text-white/70 max-w-2xl mx-auto">Showcase time‑limited deals with eye‑catching cards and clear calls to action.</p>
+        </div>
 
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="mb-4 bg-green-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-green-600 transition-colors duration-300"
-        >
-          {showAddForm ? "Cancel Add" : "Add New Offer"}
-        </button>
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-emerald-900/20 transition-colors duration-300"
+          >
+            {showAddForm ? "Cancel Add" : "Add New Offer"}
+          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-white/60 text-sm">Sort</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="bg-white/10 text-white text-sm px-3 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+            </select>
+          </div>
+        </div>
 
         {showAddForm && (
           <motion.form
@@ -269,37 +288,54 @@ export default function OffersPage() {
         {offers.length === 0 && !loading && !error ? (
           <div className="text-white/70 text-center">No offers found.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {offers.map((offer) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...offers]
+              .sort((a, b) => sortBy === 'newest' ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+              .map((offer) => (
               <motion.div
                 key={offer.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white/10 rounded-xl overflow-hidden shadow-lg border border-white/10 flex flex-col"
+                whileHover={{ y: -6 }}
+                className="group relative rounded-2xl overflow-hidden flex flex-col bg-gradient-to-b from-white/10 to-white/5 border border-white/10 shadow-2xl"
               >
-                <div className="relative w-full aspect-video">
+                <div className="relative w-full aspect-video overflow-hidden">
                   <Image
                     src={offer.image}
                     alt={offer.title}
                     layout="fill"
                     objectFit="cover"
-                    className="rounded-t-xl"
+                    className="rounded-t-2xl transition-transform duration-500 group-hover:scale-105"
                   />
-                </div>
-                <div className="p-4 flex-grow flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
-                      {offer.title}
-                    </h3>
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-transparent opacity-80"></div>
+                  {/* New badge / date */}
+                  <div className="absolute top-3 left-3">
+                    {(() => {
+                      const created = new Date(offer.createdAt);
+                      const isNew = Date.now() - created.getTime() < 1000 * 60 * 60 * 24 * 7;
+                      const label = isNew ? 'New' : created.toISOString().slice(0,10);
+                      return (
+                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/90 text-white shadow-md">
+                          {label}
+                        </span>
+                      );
+                    })()}
                   </div>
-                  <div className="mt-4">
+                </div>
+                <div className="p-5 flex-grow flex flex-col justify-between">
+                  <h3 className="text-lg font-bold text-white tracking-tight mb-2">
+                    {offer.title}
+                  </h3>
+                  <div className="flex items-center justify-between">
                     <button
                       onClick={() => handleDeleteOfferClick(offer.id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-red-600 transition-colors duration-300 text-sm"
+                      className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 transition-colors shadow-md"
                     >
                       Delete
                     </button>
+                    <span className="text-white/60 text-xs">Tap card for details</span>
                   </div>
                 </div>
               </motion.div>

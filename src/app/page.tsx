@@ -26,7 +26,7 @@ export default function EnterPage() {
               >
                 <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Honda</span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">Aide</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400"> Aid</span>
                 </h1>
                 <p className="text-xl text-white/80 max-w-2xl mx-auto font-light">
                   Expert care for your Honda's performance and reliability
@@ -75,10 +75,11 @@ export default function EnterPage() {
                 whileTap={{ scale: 0.98 }}
               >
                 <Link 
-                  href="/login" 
+                  href="/signup" 
                   className="px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-300 text-center block"
                 >
-                  Schedule Service
+                  {/* Schedule Service */}
+                  Sign up
                 </Link>
               </motion.div>
               <motion.div
@@ -91,7 +92,7 @@ export default function EnterPage() {
                 >
                   Sign In
                 </Link>
-              </motion.div>
+              </motion.div> 
             </div>
 
             {/* Services Grid */}

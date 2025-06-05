@@ -98,6 +98,10 @@ export default function ServicesPage() {
       setAddError("Price must be a valid number.");
       return;
     }
+    if (Number(addPrice) < 0) {
+      setAddError("Price cannot be negative.");
+      return;
+    }
     const formData = new FormData();
     formData.append("name", addName);
     formData.append("image", addImageFile);
@@ -155,6 +159,10 @@ export default function ServicesPage() {
     }
     if (isNaN(Number(editPrice))) {
       setEditError("Price must be a valid number.");
+      return;
+    }
+    if (Number(editPrice) < 0) {
+      setEditError("Price cannot be negative.");
       return;
     }
     const formData = new FormData();
@@ -219,9 +227,17 @@ export default function ServicesPage() {
     }
   };
 
+  const formatPrice = (price: number) => {
+    const num = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+    return `$${num}`;
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col items-center justify-center p-4">
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 items-center justify-center p-4">
         <LoadingSpinner
           variant="dots"
           size="lg"
@@ -237,210 +253,390 @@ export default function ServicesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-red-400 text-center"
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-2xl bg-gradient-to-br from-red-500/10 to-red-600/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-red-500/20 text-center"
         >
-          {error}
-        </motion.p>
+          <div className="text-6xl mb-4">⚠️</div>
+          <div className="text-red-300 text-2xl font-semibold mb-4">{error}</div>
+          <div className="text-red-200/80">
+            <p>Please check your authentication and try again.</p>
+          </div>
+        </motion.div>
       </div>
     );
   }
 
+  const totalValue = services.reduce((sum, service) => sum + service.price, 0);
+  const avgPrice = services.length > 0 ? totalValue / services.length : 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col items-center justify-center p-4">
+    <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full max-w-5xl bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/10"
+        className="w-full max-w-7xl mx-auto"
       >
-        <h1 className="text-3xl font-bold text-white mb-8 text-center">Services</h1>
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="mb-6 bg-green-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-green-600 transition-colors duration-300"
+        {/* Header Section */}
+        <div className="text-center mb-12">
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl md:text-5xl font-bold text-white mb-2"
+          >
+            Services Management
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-white/60 text-lg"
+          >
+            Manage your service offerings and pricing
+          </motion.p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-xl rounded-2xl p-6 border border-blue-500/30"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-200 text-sm font-medium">Total Services</p>
+                <p className="text-3xl font-bold text-white">{services.length}</p>
+              </div>
+              <div className="text-3xl">🔧</div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-xl rounded-2xl p-6 border border-green-500/30"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-green-200 text-sm font-medium">Total Value</p>
+                <p className="text-3xl font-bold text-white">{formatPrice(totalValue)}</p>
+              </div>
+              <div className="text-3xl">💰</div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/30"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-purple-200 text-sm font-medium">Avg Price</p>
+                <p className="text-3xl font-bold text-white">{formatPrice(avgPrice)}</p>
+              </div>
+              <div className="text-3xl">📊</div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Success/Error Messages */}
+        {addSuccess && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-green-500/20 border border-green-500/30 text-green-300 px-6 py-4 rounded-xl mb-6 text-center"
+          >
+            ✅ {addSuccess}
+          </motion.div>
+        )}
+        {editSuccess && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-green-500/20 border border-green-500/30 text-green-300 px-6 py-4 rounded-xl mb-6 text-center"
+          >
+            ✅ {editSuccess}
+          </motion.div>
+        )}
+
+        {/* Add Service Button */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="text-center mb-8"
         >
-          {showAddForm ? "Cancel Add" : "Add New Service"}
-        </button>
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-green-500/25 transform hover:scale-105"
+          >
+            {showAddForm ? "✕ Cancel" : "➕ Add New Service"}
+          </button>
+        </motion.div>
+
+        {/* Add Service Form */}
         {showAddForm && (
-          <motion.form
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3 }}
-            onSubmit={handleAddService}
-            className="bg-white/10 rounded-xl p-6 mb-6 space-y-4"
+            className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 mb-8 border border-white/10"
           >
-            <h2 className="text-xl font-bold text-white">Add New Service</h2>
-            {addError && <div className="text-red-500">{addError}</div>}
-            {addSuccess && <div className="text-green-500">{addSuccess}</div>}
-            <div>
-              <label className="block text-white mb-1">Name</label>
-              <input
-                type="text"
-                value={addName}
-                onChange={e => setAddName(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-white mb-1">Image</label>
-              <input
-                type="file"
-                onChange={e => setAddImageFile(e.target.files ? e.target.files[0] : null)}
-                className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                required
-                accept="image/*"
-              />
-            </div>
-            <div>
-              <label className="block text-white mb-1">Price</label>
-              <input
-                type="number"
-                value={addPrice}
-                onChange={e => setAddPrice(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
-                required
-                min="0"
-                step="0.01"
-              />
-            </div>
-            <div>
-              <label className="block text-white mb-1">Description</label>
-              <textarea
-                value={addDescription}
-                onChange={e => setAddDescription(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
-                required
-                rows={3}
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-blue-600 transition-colors duration-300"
-            >
-              Add Service
-            </button>
-          </motion.form>
+            <h2 className="text-2xl font-bold text-white mb-6 text-center">Add New Service</h2>
+            {addError && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-xl mb-6 text-center"
+              >
+                ⚠️ {addError}
+              </motion.div>
+            )}
+            
+            <form onSubmit={handleAddService} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-white/90 text-sm font-medium mb-2">Service Name</label>
+                  <input
+                    type="text"
+                    value={addName}
+                    onChange={e => setAddName(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300"
+                    placeholder="Enter service name..."
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/90 text-sm font-medium mb-2">Price</label>
+                  <input
+                    type="number"
+                    value={addPrice}
+                    onChange={e => setAddPrice(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300"
+                    placeholder="0.00"
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-white/90 text-sm font-medium mb-2">Description</label>
+                <textarea
+                  value={addDescription}
+                  onChange={e => setAddDescription(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300"
+                  placeholder="Describe your service..."
+                  required
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-white/90 text-sm font-medium mb-2">Service Image</label>
+                <input
+                  type="file"
+                  onChange={e => setAddImageFile(e.target.files ? e.target.files[0] : null)}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+                  required
+                  accept="image/*"
+                />
+              </div>
+              
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 transform hover:scale-105"
+                >
+                  ✨ Add Service
+                </button>
+              </div>
+            </form>
+          </motion.div>
         )}
+
+        {/* Edit Service Form */}
         {showEditForm && editService && (
-          <motion.form
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3 }}
-            onSubmit={handleEditService}
-            className="bg-white/10 rounded-xl p-6 mb-6 space-y-4"
+            className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 mb-8 border border-white/10"
           >
-            <h2 className="text-xl font-bold text-white">Edit Service</h2>
-            {editError && <div className="text-red-500">{editError}</div>}
-            {editSuccess && <div className="text-green-500">{editSuccess}</div>}
-            <div>
-              <label className="block text-white mb-1">Name</label>
-              <input
-                type="text"
-                value={editName}
-                onChange={e => setEditName(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-white mb-1">Image (leave blank to keep current)</label>
-              <input
-                type="file"
-                onChange={e => setEditImageFile(e.target.files ? e.target.files[0] : null)}
-                className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                accept="image/*"
-              />
-            </div>
-            <div>
-              <label className="block text-white mb-1">Price</label>
-              <input
-                type="number"
-                value={editPrice}
-                onChange={e => setEditPrice(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
-                required
-                min="0"
-                step="0.01"
-              />
-            </div>
-            <div>
-              <label className="block text-white mb-1">Description</label>
-              <textarea
-                value={editDescription}
-                onChange={e => setEditDescription(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
-                required
-                rows={3}
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-blue-600 transition-colors duration-300"
-            >
-              Save Changes
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowEditForm(false)}
-              className="ml-4 bg-gray-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-gray-600 transition-colors duration-300"
-            >
-              Cancel
-            </button>
-          </motion.form>
+            <h2 className="text-2xl font-bold text-white mb-6 text-center">Edit Service</h2>
+            {editError && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-xl mb-6 text-center"
+              >
+                ⚠️ {editError}
+              </motion.div>
+            )}
+            
+            <form onSubmit={handleEditService} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-white/90 text-sm font-medium mb-2">Service Name</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/90 text-sm font-medium mb-2">Price</label>
+                  <input
+                    type="number"
+                    value={editPrice}
+                    onChange={e => setEditPrice(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300"
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-white/90 text-sm font-medium mb-2">Description</label>
+                <textarea
+                  value={editDescription}
+                  onChange={e => setEditDescription(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300"
+                  required
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-white/90 text-sm font-medium mb-2">New Image (optional)</label>
+                <input
+                  type="file"
+                  onChange={e => setEditImageFile(e.target.files ? e.target.files[0] : null)}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+                  accept="image/*"
+                />
+                <p className="text-white/60 text-sm mt-1">Leave blank to keep the current image</p>
+              </div>
+              
+              <div className="flex justify-center gap-4">
+                <button
+                  type="submit"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 transform hover:scale-105"
+                >
+                  💾 Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEditForm(false)}
+                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg transform hover:scale-105"
+                >
+                  ✕ Cancel
+                </button>
+              </div>
+            </form>
+          </motion.div>
         )}
+
+        {/* Services Grid */}
         {services.length === 0 ? (
-          <div className="text-white/70 text-center">No services found.</div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl p-12 border border-white/10 text-center"
+          >
+            <div className="text-6xl mb-4">🔧</div>
+            <h3 className="text-2xl font-bold text-white mb-2">No Services Found</h3>
+            <p className="text-white/60">
+              Start by adding your first service to showcase your offerings.
+            </p>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {services.map((service) => (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
+            {services.map((service, index) => (
               <motion.div
                 key={service.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white/10 rounded-xl overflow-hidden shadow-lg border border-white/10 flex flex-col"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+                whileHover={{ y: -5 }}
+                className="bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300"
               >
-                <div className="relative w-full aspect-video">
-                  {service.image && (
+                <div className="relative w-full aspect-[4/3] overflow-hidden">
+                  {service.image ? (
                     <Image
                       src={service.image}
                       alt={service.name}
                       layout="fill"
                       objectFit="cover"
-                      className="rounded-t-xl"
+                      className="transition-transform duration-300 hover:scale-110"
                     />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                      <span className="text-4xl">🔧</span>
+                    </div>
                   )}
-                </div>
-                <div className="p-4 flex-grow flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2 truncate">{service.name}</h3>
-                    <p className="text-white/70 text-sm mb-2">{service.description}</p>
-                    <p className="text-blue-300 font-bold text-lg mb-2">${service.price.toFixed(2)}</p>
-                    <p className="text-xs text-white/50 mt-1">Created: {new Date(service.createdAt).toLocaleDateString()}</p>
+                  
+                  {/* Price Badge */}
+                  <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-full font-semibold">
+                    {formatPrice(service.price)}
                   </div>
-                  <div className="mt-4 flex gap-2">
-                    <button
-                      onClick={() => openEditForm(service)}
-                      className="bg-yellow-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-yellow-600 transition-colors duration-300 text-sm"
-                    >
-                      Edit
-                    </button>
+                </div>
+
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-white mb-3 truncate">
+                    {service.name}
+                  </h3>
+                  
+                  <p className="text-white/70 text-sm mb-4 line-clamp-2">
+                    {service.description}
+                  </p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <p className="text-blue-300 font-bold text-lg">
+                      {formatPrice(service.price)}
+                    </p>
+                    <p className="text-white/50 text-xs">
+                      Added {new Date(service.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="px-6 pb-6">
+                  <div className="grid grid-cols-1 gap-3">
                     <button
                       onClick={() => openDeleteModal(service)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-red-600 transition-colors duration-300 text-sm"
+                      className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25"
                     >
-                      Delete
+                      🗑️ Delete
                     </button>
                   </div>
                 </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
+
+        {/* Confirmation Modal */}
         <ConfirmationModal
           isOpen={isDeleteModalOpen}
           onCancel={() => setIsDeleteModalOpen(false)}

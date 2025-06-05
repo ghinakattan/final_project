@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { auth, storeToken } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function SignupPage() {
   const [phone, setPhone] = useState('');
@@ -11,12 +12,14 @@ export default function SignupPage() {
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setLoading(true);
     try {
       const response = await auth.signup(phone, password, fullName, "");
       console.log("Signup API response:", response);
@@ -33,12 +36,19 @@ export default function SignupPage() {
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Signup failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative">
+        {loading && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 rounded-3xl">
+            <LoadingSpinner size="lg" />
+          </div>
+        )}
         <div className="w-full max-w-md">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -66,6 +76,7 @@ export default function SignupPage() {
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300"
                   placeholder="Enter your phone number"
                   required
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -80,6 +91,7 @@ export default function SignupPage() {
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300"
                   placeholder="Enter your full name"
                   required
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -94,6 +106,7 @@ export default function SignupPage() {
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300"
                   placeholder="Enter your password"
                   required
+                  disabled={loading}
                 />
               </div>
               <motion.button
@@ -101,8 +114,9 @@ export default function SignupPage() {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-300"
+                disabled={loading}
               >
-                Sign Up
+                {loading ? 'Signing up...' : 'Sign Up'}
               </motion.button>
               {error && <div className="text-red-500 text-center">{error}</div>}
               {success && <div className="text-green-500 text-center">{success}</div>}
