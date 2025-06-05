@@ -52,8 +52,8 @@ function ReservationDetailsModal({ open, onClose, reservation }: { open: boolean
               <p className="text-white/60 text-sm">Status</p>
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                 reservation.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
-                reservation.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                reservation.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                reservation.status === 'REJECTED' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                reservation.status === 'COMPLETED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
               }`}>
                 {reservation.status}
@@ -134,7 +134,7 @@ function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }:
   const [error, setError] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  const statuses = ['PENDING', 'ACCEPTED', 'CANCELLED'];
+  const statuses = ['REJECTED', 'ACCEPTED', 'COMPLETED'];
 
   useEffect(() => {
     if (open) {
@@ -365,7 +365,7 @@ export default function ReservationsPage() {
   }
 
   const totalRevenue = reservations.reduce((sum, r) => sum + r.price, 0);
-  const pendingReservations = reservations.filter(r => r.status === 'PENDING').length;
+  const rejectingReservations = reservations.filter(r => r.status === 'REJECTED').length;
   const acceptedReservations = reservations.filter(r => r.status === 'ACCEPTED').length;
 
   return (
@@ -448,8 +448,8 @@ export default function ReservationsPage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-200 text-sm font-medium">Pending</p>
-                <p className="text-3xl font-bold text-white">{pendingReservations}</p>
+                <p className="text-purple-200 text-sm font-medium">Accepting</p>
+                <p className="text-3xl font-bold text-white">{acceptedReservations}</p>
               </div>
               <div className="text-3xl">⏳</div>
             </div>
@@ -488,9 +488,9 @@ export default function ReservationsPage() {
                 onChange={e => setStatusFilter(e.target.value)}
               >
                 <option value="" className="bg-white text-black">All Statuses</option>
-                <option value="PENDING" className="bg-white text-black">Pending</option>
+                <option value="REJECTED" className="bg-white text-black">REJECTED</option>
                 <option value="ACCEPTED" className="bg-white text-black">ACCEPTED</option>
-                <option value="CANCELLED" className="bg-white text-black">Cancelled</option>
+                <option value="COMPLETED" className="bg-white text-black">COMPLETED</option>
               </select>
             </div>
           </div>
@@ -536,8 +536,8 @@ export default function ReservationsPage() {
                     <td className="px-6 py-4">
                       <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                         r.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
-                        r.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                        r.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                        r.status === 'REJECTED' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                        r.status === 'COMPLETED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                         'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                       }`}>
                         {r.status}

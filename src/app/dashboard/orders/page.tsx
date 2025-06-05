@@ -85,6 +85,7 @@ function OrderDetailsModal({ open, onClose, order }: { open: boolean, onClose: (
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                 order.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
                 order.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                order.status === 'REJECTED' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
                 order.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
               }`}>
@@ -142,7 +143,9 @@ function ChangeStatusModal({ open, onClose, onSubmit, orderId, changing }: { ope
   const [status, setStatus] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
-  const statuses = ["PENDING", "ACCEPTED", "REJECTED", "CANCELED"];
+  const statuses = [
+    // "PENDING", 
+    "ACCEPTED", "REJECTED", "COMPLETED"];
 
   useEffect(() => {
     if (open) {
@@ -391,6 +394,7 @@ export default function OrdersPage() {
 
   const totalRevenue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
   const pendingOrders = orders.filter(order => order.status === 'PENDING').length;
+  const rejectingOrders = orders.filter(order => order.status === 'REJECTED').length;
   const acceptedOrders = orders.filter(order => order.status === 'ACCEPTED').length;
 
   return (
@@ -517,9 +521,10 @@ export default function OrdersPage() {
                 onChange={e => setStatusFilter(e.target.value)}
               >
                 <option value="" className="bg-white text-black">All Statuses</option>
-                <option value="PENDING" className="bg-white text-black">Pending</option>
-                {/* <option value="COMPLETED" className="bg-white text-black">Completed</option> */}
-                <option value="CANCELLED" className="bg-white text-black">Cancelled</option>
+                {/* <option value="PENDING" className="bg-white text-black">Pending</option> */}
+                <option value="REJECTED" className="bg-white text-black">Rejected</option>
+                <option value="COMPLETED" className="bg-white text-black">Completed</option>
+                {/* <option value="CANCELLED" className="bg-white text-black">Cancelled</option> */}
                 <option value="ACCEPTED" className="bg-white text-black">Accepted</option>
                 {/* <option value="REJECTED" className="bg-white text-black">Rejected</option> */}
               </select>
@@ -577,7 +582,8 @@ export default function OrdersPage() {
                       <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                         order.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
                         order.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                        order.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                        order.status === 'REJECTING' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                        order.status === 'COMPLETED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                         'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                       }`}>
                         {order.status}
