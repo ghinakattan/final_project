@@ -11,8 +11,10 @@ const navigation = [
   { name: 'Services', href: '/dashboard/services' },
   { name: 'Offers', href: '/dashboard/offers' },
   { name: 'Orders', href: '/dashboard/orders' },
+  { name: 'Reservations', href: '/dashboard/reservations' },
   { name: 'Analytics', href: '/dashboard/analytics' },
   { name: 'Settings', href: '/dashboard/settings' },
+  
 ];
 
 export default function Sidebar() {
