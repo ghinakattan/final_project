@@ -4,6 +4,7 @@ import { getToken } from "@/lib/auth";
 import { motion } from "framer-motion";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ProgressIndicator from "@/components/ProgressIndicator";
+import Link from "next/link";
 
 interface User {
   id: number;
@@ -241,6 +242,7 @@ export default function UsersPage() {
                   <th className="px-6 py-4 text-left text-white font-semibold text-lg">Phone</th>
                   <th className="px-6 py-4 text-left text-white font-semibold text-lg">Role</th>
                   <th className="px-6 py-4 text-left text-white font-semibold text-lg">Created Date</th>
+                  <th className="px-6 py-4 text-left text-white font-semibold text-lg">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -292,6 +294,14 @@ export default function UsersPage() {
                             minute: '2-digit'
                           })}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Link
+                          href={`/dashboard/users/${user.id}/orders`}
+                          className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg"
+                        >
+                          View Orders
+                        </Link>
                       </td>
                     </motion.tr>
                   ))
