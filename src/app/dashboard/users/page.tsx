@@ -296,12 +296,20 @@ export default function UsersPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <Link
-                          href={`/dashboard/users/${user.id}/orders`}
-                          className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg"
-                        >
-                          View Orders
-                        </Link>
+                        <div className="flex gap-2">
+                          <Link
+                            href={`/dashboard/users/${user.id}/orders`}
+                            className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg"
+                          >
+                            View Orders
+                          </Link>
+                          <Link
+                            href={`/dashboard/users/${user.id}/reservations`}
+                            className="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg"
+                          >
+                            View Reservations
+                          </Link>
+                        </div>
                       </td>
                     </motion.tr>
                   ))
