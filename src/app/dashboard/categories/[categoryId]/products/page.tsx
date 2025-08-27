@@ -246,7 +246,6 @@ const ProductsByCategoryPage: React.FC = () => {
     return (
       <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 items-center justify-center p-4">
         <LoadingSpinner
-          variant="dots"
           size="lg"
           className="mb-8"
         />
