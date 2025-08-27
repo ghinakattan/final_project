@@ -41,6 +41,11 @@ export default function ServicesPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
 
+  const sanitizeDescription = (text: string) => {
+    if (!text) return text;
+    return text.replace(/Car\s*Type:[^\n]*/gi, '').trim();
+  };
+
   const fetchServices = async () => {
     const token = getToken();
     if (!token) {
@@ -608,7 +613,7 @@ export default function ServicesPage() {
                   </h3>
                   
                   <p className="text-white/70 text-sm mb-4 line-clamp-2">
-                    {service.description}
+                    {sanitizeDescription(service.description)}
                   </p>
                   
                   <div className="space-y-2 mb-4">
