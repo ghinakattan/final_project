@@ -128,10 +128,12 @@ function Toast({ message, type, onClose }: { message: string, type: 'success' | 
   );
 }
 
-function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }: { open: boolean, onClose: () => void, onSubmit: (status: string, note: string) => void, reservationId: number, changing: boolean }) {
+function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }: { open: boolean, onClose: () => void, onSubmit: (status: string, note: string, date: string, time: string) => void, reservationId: number, changing: boolean }) {
   const [status, setStatus] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
   const statuses = ['PENDING', 'COMPLETED', 'CANCELLED'];
 
   useEffect(() => {
@@ -139,6 +141,8 @@ function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }:
       setStatus('');
       setNote('');
       setError('');
+      setDate('');
+      setTime('');
     }
   }, [open]);
 
@@ -184,6 +188,27 @@ function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }:
             />
             {error && <div className="text-red-400 text-sm mt-1">{error}</div>}
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2 text-white/80 text-sm font-medium">Date</label>
+              <input
+                type="date"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-white/50 transition-all duration-300"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-white/80 text-sm font-medium">Time</label>
+              <input
+                type="time"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-white/50 transition-all duration-300"
+                value={time}
+                onChange={e => setTime(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
         
         <div className="flex justify-end gap-3 mt-6">
@@ -195,13 +220,17 @@ function ChangeStatusModal({ open, onClose, onSubmit, reservationId, changing }:
           </button>
           <button
             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition-all duration-300 hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
-            disabled={!status || !note || changing}
+            disabled={!status || !note || !date || !time || changing}
             onClick={() => {
               if (!note) {
                 setError('Note is required.');
                 return;
               }
-              onSubmit(status, note);
+              if (!date || !time) {
+                setError('Date and time are required.');
+                return;
+              }
+              onSubmit(status, note, date, time);
             }}
           >
             {changing && <LoadingSpinner size="sm" />}
@@ -278,7 +307,7 @@ export default function ReservationsPage() {
     setSelectedReservationId(null);
   };
 
-  const handleChangeStatus = async (status: string, note: string) => {
+  const handleChangeStatus = async (status: string, note: string, date: string, time: string) => {
     if (!selectedReservationId) return;
     setChanging(true);
     const token = getToken();
@@ -293,6 +322,8 @@ export default function ReservationsPage() {
           status,
           id: selectedReservationId,
           note,
+          date,
+          time,
         }),
       });
       if (!res.ok) throw new Error('Failed to change status');
