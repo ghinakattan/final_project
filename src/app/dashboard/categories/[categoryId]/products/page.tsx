@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import { useParams } from 'next/navigation';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Category {
   id: number;
@@ -242,7 +243,14 @@ const ProductsByCategoryPage: React.FC = () => {
   );
 
   if (loading) {
-    return <div>Loading products...</div>;
+    return (
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 items-center justify-center p-4">
+        <LoadingSpinner
+          size="lg"
+          className="mb-8"
+        />
+      </div>
+    );
   }
 
   if (error) {

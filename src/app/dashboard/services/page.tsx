@@ -15,6 +15,7 @@ interface Service {
   price: number;
   description: string;
   createdAt: string;
+  carType?: number;
 }
 
 export default function ServicesPage() {
@@ -39,6 +40,11 @@ export default function ServicesPage() {
   const [editSuccess, setEditSuccess] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
+
+  const sanitizeDescription = (text: string) => {
+    if (!text) return text;
+    return text.replace(/Car\s*Type:[^\n]*/gi, '').trim();
+  };
 
   const fetchServices = async () => {
     const token = getToken();
@@ -607,7 +613,7 @@ export default function ServicesPage() {
                   </h3>
                   
                   <p className="text-white/70 text-sm mb-4 line-clamp-2">
-                    {service.description}
+                    {sanitizeDescription(service.description)}
                   </p>
                   
                   <div className="space-y-2 mb-4">
@@ -617,6 +623,15 @@ export default function ServicesPage() {
                     <p className="text-white/50 text-xs">
                       Added {new Date(service.createdAt).toLocaleDateString()}
                     </p>
+                    {service.carType ? (
+                      <p className="text-white/60 text-sm">
+                        Car Type: <span className="text-green-300">{service.carType === 1 ? 'Gasoline' : service.carType === 2 ? 'Electric' : 'Hybrid'}</span>
+                      </p>
+                    ) : (
+                      <div className="bg-green-500/20 border border-green-500/30 text-green-300 px-3 py-2 rounded-lg text-sm">
+                        ⚡ Compatible with all car types (Gasoline, Electric, Hybrid)
+                      </div>
+                    )}
                   </div>
                 </div>
 
